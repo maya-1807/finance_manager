@@ -39,6 +39,7 @@
 | installment_number | INTEGER | Installment number (NULL if not installments) |
 | installment_total | INTEGER | Total installments (NULL if not installments) |
 | original_id | TEXT | Original ID from scraper (to prevent duplicates) |
+| notes | TEXT | User notes (NULL by default) |
 | created_at | TEXT | When saved to DB |
 
 ### 4. categories — Variable Expense Categories
@@ -51,7 +52,7 @@
 | color | TEXT | Color for charts |
 
 ### 5. classification_rules — Automatic Classification Rules
-I'm not sure about this one - the classification may be done manually
+> Note: Keep this table. You can start by classifying manually, and each manual classification can optionally create a rule here. Over time, the system learns and auto-classifies more transactions.
 | Column | Type | Description |
 |---|---|---|
 | id | INTEGER PK | Identifier |
@@ -68,6 +69,7 @@ I'm not sure about this one - the classification may be done manually
 | frequency | TEXT | "monthly" / "weekly" / "biweekly" |
 | account_id | INTEGER FK → accounts | Which account it goes into |
 | day_of_month | INTEGER | Day of month (NULL if not applicable) |
+| keyword | TEXT | Keyword for automatic identification in transactions |
 
 ### 7. fixed_expenses — Fixed Expenses
 | Column | Type | Description |
@@ -80,6 +82,7 @@ I'm not sure about this one - the classification may be done manually
 | credit_card_id | INTEGER FK → credit_cards | Which card (NULL if standing order) |
 | account_id | INTEGER FK → accounts | Which account |
 | keyword | TEXT | Keyword for automatic identification in transactions |
+| day_of_month | INTEGER | Expected day of month for the charge |
 
 ### 8. savings — Savings
 | Column | Type | Description |
@@ -118,6 +121,7 @@ I'm not sure about this one - the classification may be done manually
 |---|---|---|
 | id | INTEGER PK | Identifier (always 1 — single row) |
 | wedding_date | TEXT | Wedding date |
+| original_budget | REAL | Original total budget for the wedding |
 | total_invited | INTEGER | Total invited |
 | confirmed_count | INTEGER | Confirmed attendance |
 | declined_count | INTEGER | Declined |
@@ -125,7 +129,16 @@ I'm not sure about this one - the classification may be done manually
 | additional_income | REAL | Additional expected income |
 | additional_expenses | REAL | Additional expected expenses |
 
-### 12. scrape_log — Scraper Run Log
+### 12. balance_snapshots — Account Balance Snapshots
+| Column | Type | Description |
+|---|---|---|
+| id | INTEGER PK | Identifier |
+| account_id | INTEGER FK → accounts | Which account |
+| date | TEXT | Snapshot date (ISO format) |
+| balance | REAL | Account balance at this point |
+| created_at | TEXT | When saved to DB |
+
+### 13. scrape_log — Scraper Run Log
 | Column | Type | Description |
 |---|---|---|
 | id | INTEGER PK | Identifier |
@@ -148,5 +161,6 @@ accounts ──1:N──> fixed_incomes
 accounts ──1:N──> fixed_expenses
 accounts ──1:N──> savings
 credit_cards ──1:N──> fixed_expenses
+accounts ──1:N──> balance_snapshots
 wedding_vendors ──1:N──> wedding_payments
 ```
