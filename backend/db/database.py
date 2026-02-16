@@ -6,8 +6,26 @@ from config import DB_PATH
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 SEED_PATH = Path(__file__).parent / "seed.sql"
 
+# When using an in-memory DB, all connections must share the same database.
+# SQLite's shared-cache URI mode enables this. We keep one connection open
+# for the lifetime of the process so the DB isn't destroyed when others close.
+_keep_alive_conn: sqlite3.Connection | None = None
+
+
+def _connect_uri(uri: str) -> sqlite3.Connection:
+    conn = sqlite3.connect(uri, uri=True)
+    conn.execute("PRAGMA foreign_keys = ON")
+    conn.row_factory = sqlite3.Row
+    return conn
+
 
 def get_connection() -> sqlite3.Connection:
+    global _keep_alive_conn
+    if DB_PATH == ":memory:":
+        uri = "file:cashboard?mode=memory&cache=shared"
+        if _keep_alive_conn is None:
+            _keep_alive_conn = _connect_uri(uri)
+        return _connect_uri(uri)
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
     conn.row_factory = sqlite3.Row
@@ -24,6 +42,15 @@ def init_db() -> None:
         conn.executescript(seed_sql)
 
         conn.commit()
+    finally:
+        conn.close()
+
+
+def get_db():
+    """FastAPI dependency that yields a DB connection."""
+    conn = get_connection()
+    try:
+        yield conn
     finally:
         conn.close()
 
