@@ -17,7 +17,7 @@
 - For each saving: name, current amount, open date, maturity date
 
 ### Mockup
-![screen 1 mockup](mockup/screen_1.png)
+![screen 1 mockup](screen_1.png)
 
 ---
 
@@ -68,7 +68,7 @@
 - Line — cumulative daily expense trend throughout the month
 
 ### Mockup
-![screen 2 mockup](mockup/screen_2.png)
+![screen 2 mockup](screen_2.png)
 
 ---
 
@@ -93,7 +93,7 @@
 - Pie — annual expense breakdown by category
 
 ### Mockup
-![screen 3 mockup](mockup/screen_3.png)
+![screen 3 mockup](screen_3.png)
 
 ---
 
@@ -128,7 +128,7 @@
 - Add / edit / delete
 
 ### Mockup
-![screen 4 mockup](mockup/screen_4.png)
+![screen 4 mockup](screen_4.png)
 
 ---
 
@@ -188,4 +188,4 @@
 - Timeline — expected payments over the months leading to the wedding
 
 ### Mockup
-![screen 5 mockup](mockup/screen_5.png)
+![screen 5 mockup](screen_5.png)
