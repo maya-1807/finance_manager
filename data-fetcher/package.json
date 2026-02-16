@@ -1,0 +1,25 @@
+{
+  "name": "data-fetcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "scrape:leumi": "tsx scrapers/scrape.ts leumi",
+    "scrape:isracard": "tsx scrapers/scrape.ts isracard",
+    "scrape:max": "tsx scrapers/scrape.ts max",
+    "scrape:all": "tsx scrapers/scrape.ts all",
+    "postinstall": "node patches/patch-isracard.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "israeli-bank-scrapers": "^6.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
