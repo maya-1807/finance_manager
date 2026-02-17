@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     installment_total INTEGER,
     original_id TEXT,
     notes TEXT,
+    charged_month TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

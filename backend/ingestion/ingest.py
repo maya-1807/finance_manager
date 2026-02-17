@@ -16,6 +16,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from db.database import get_connection
+from ingestion.classifier import ClassificationContext, classify_transaction
 from ingestion.duplicate_checker import check_duplicate, update_pending_to_completed
 
 ISRAEL_TZ = ZoneInfo("Asia/Jerusalem")
@@ -108,6 +109,7 @@ def _insert_transaction(db: sqlite3.Connection, txn: dict) -> int:
         "source_type", "source_id", "date", "processed_date", "amount",
         "currency", "description", "category_id", "transaction_type",
         "status", "installment_number", "installment_total", "original_id", "notes",
+        "charged_month",
     ]
     placeholders = ", ".join("?" for _ in cols)
     col_names = ", ".join(cols)
@@ -163,6 +165,7 @@ def ingest_file(file_path: str | Path, db: sqlite3.Connection | None = None) -> 
         data = json.loads(file_path.read_text(encoding="utf-8"))
         bank = data["bank"]
         scrape_date = _normalize_date(data.get("scrapedAt")) or datetime.now(ISRAEL_TZ).strftime("%Y-%m-%d")
+        classification_ctx = ClassificationContext(db)
 
         for account in data.get("accounts", []):
             account_number = account.get("accountNumber", "")
@@ -183,6 +186,7 @@ def ingest_file(file_path: str | Path, db: sqlite3.Connection | None = None) -> 
             for raw_txn in txns:
                 try:
                     txn = _normalize_transaction(raw_txn, source_type, source_id, bank)
+                    classify_transaction(db, txn, ctx=classification_ctx)
                     action, existing = check_duplicate(db, txn)
 
                     if action == "new":
@@ -192,6 +196,8 @@ def ingest_file(file_path: str | Path, db: sqlite3.Connection | None = None) -> 
                         update_pending_to_completed(
                             db, existing["id"], txn["original_id"],
                             txn["processed_date"], txn["amount"],
+                            txn["category_id"], txn["transaction_type"],
+                            txn.get("charged_month"),
                         )
                         account_updated += 1
                     else:

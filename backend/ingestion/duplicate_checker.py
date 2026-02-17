@@ -43,10 +43,15 @@ def update_pending_to_completed(
     original_id: str | None,
     processed_date: str | None,
     amount: float,
+    category_id: int | None = None,
+    transaction_type: str | None = None,
+    charged_month: str | None = None,
 ) -> None:
     """Update a pending transaction to completed status."""
     db.execute(
         "UPDATE transactions SET status = 'completed', original_id = ?, "
-        "processed_date = ?, amount = ? WHERE id = ?",
-        (original_id, processed_date, amount, existing_id),
+        "processed_date = ?, amount = ?, category_id = ?, "
+        "transaction_type = ?, charged_month = ? WHERE id = ?",
+        (original_id, processed_date, amount, category_id,
+         transaction_type, charged_month, existing_id),
     )

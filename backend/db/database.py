@@ -5,6 +5,7 @@ from config import DB_PATH
 
 SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 SEED_PATH = Path(__file__).parent / "seed.sql"
+MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
 # When using an in-memory DB, all connections must share the same database.
 # SQLite's shared-cache URI mode enables this. We keep one connection open
@@ -42,8 +43,32 @@ def init_db() -> None:
         conn.executescript(seed_sql)
 
         conn.commit()
+
+        _run_migrations(conn)
     finally:
         conn.close()
+
+
+def _run_migrations(conn: sqlite3.Connection) -> None:
+    """Apply pending migrations based on schema_version."""
+    current = conn.execute(
+        "SELECT MAX(version) FROM schema_version"
+    ).fetchone()[0] or 0
+
+    migrations = {
+        2: MIGRATIONS_DIR / "002_charged_month.sql",
+    }
+
+    for version in sorted(migrations):
+        if current < version:
+            sql = migrations[version].read_text(encoding="utf-8")
+            conn.executescript(sql)
+            conn.execute(
+                "INSERT OR REPLACE INTO schema_version (version) VALUES (?)",
+                (version,),
+            )
+            conn.commit()
+            print(f"Applied migration {version}: {migrations[version].name}")
 
 
 def get_db():
