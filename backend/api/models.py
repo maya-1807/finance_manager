@@ -101,3 +101,27 @@ class SavingsCreate(BaseModel):
 
 class SavingsResponse(SavingsCreate):
     id: int
+
+
+# --- Transactions ---
+
+class TransactionCreate(BaseModel):
+    source_type: str
+    source_id: int
+    date: str
+    processed_date: Optional[str] = None
+    amount: float
+    currency: str = "ILS"
+    description: Optional[str] = None
+    category_id: Optional[int] = None
+    transaction_type: Optional[str] = None
+    status: str = "completed"
+    installment_number: Optional[int] = None
+    installment_total: Optional[int] = None
+    original_id: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class TransactionResponse(TransactionCreate):
+    id: int
+    created_at: str
