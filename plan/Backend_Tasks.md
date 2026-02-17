@@ -3,6 +3,8 @@
 > Each phase and task is listed in the order it should be implemented.
 > Later tasks may depend on earlier ones; dependencies are noted where relevant.
 
+> **Language policy:** All code must be Python, except `data-fetcher/` (Node.js/TypeScript, required by `israeli-bank-scrapers`).
+
 ---
 
 ## Phase 1 — Foundation
