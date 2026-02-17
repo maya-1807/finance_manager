@@ -7,7 +7,7 @@
 
 ---
 
-## Phase 1 — Foundation
+## Phase 1 — Foundation ✅
 
 ### Task 1: Database Setup ✅
 - Create SQLite database file (`cashboard.db`)
@@ -37,9 +37,9 @@
 
 ---
 
-## Phase 2 — Scraper & Data Pipeline
+## Phase 2 — Scraper & Data Pipeline ✅
 
-### Task 3: Node.js Scraper Script
+### Task 3: Node.js Scraper Script ✅
 - Integration with `israeli-bank-scrapers` npm package
 - Scraper script (`scrapers/scraper_runner.js`) that connects to:
   - Bank Leumi (shared account) — `CompanyTypes.leumi`
@@ -51,7 +51,7 @@
 - Retry logic with backoff for transient failures
 - Continue scraping other sources if one fails
 
-### Task 4: Transaction Ingestion Pipeline
+### Task 4: Transaction Ingestion Pipeline ✅
 - Read scraper JSON output → normalize to unified format:
   - ISO 8601 dates, consistent amount signs (negative=expense, positive=income)
   - Map scraper fields to DB transaction columns
@@ -61,7 +61,7 @@
   - Handle edge cases: same transaction in bank + credit card statements, pending→completed transitions
 - Installment handling: extract `installment_number` and `installment_total` from scraper data
 
-### Task 5: Automatic Classification
+### Task 5: Automatic Classification ✅
 - On each new transaction:
   1. Match description against `classification_rules` keywords → assign category, set `transaction_type = "variable_expense"`
   2. Match against `fixed_expenses` keywords → set `transaction_type = "fixed_expense"`
@@ -72,7 +72,7 @@
   - Transaction after billing day → expected next month
   - Use `credit_cards.billing_day` to determine charged vs. expected status
 
-### Task 6: Transaction Endpoints
+### Task 6: Transaction Endpoints ✅
 - `GET /api/transactions?from=&to=&category=&account=` — filtered list
 - `GET /api/transactions/uncategorized` — unclassified transactions
 - `PUT /api/transactions/:id` — edit transaction (category, notes, amount)
@@ -83,7 +83,7 @@
 - Parser that maps columns to the standard transaction format
 - Feeds into the same ingestion pipeline (dedup + classification)
 
-### Task 8: On-Demand Sync
+### Task 8: On-Demand Sync ✅
 - `POST /api/sync` endpoint — triggers scraper + ingestion on demand (called by UI sync button)
 - Accepts optional `banks` list; defaults to all banks
 - Runs `npm run scrape:<bank>` via subprocess for each bank, continues on failure
@@ -214,6 +214,7 @@ backend/
 │       ├── fixed_incomes.py
 │       ├── fixed_expenses.py
 │       ├── savings.py
+│       ├── sync.py
 │       ├── transactions.py
 │       ├── overview.py
 │       ├── monthly.py
