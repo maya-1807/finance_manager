@@ -4,6 +4,8 @@ import { saveResults } from './save-results.js';
 import { scrapeLeumi } from './scrapers/leumi.js';
 import { scrapeIsracard } from './scrapers/isracard.js';
 import { scrapeMax } from './scrapers/max.js';
+import { retryWithBackoff } from './retry.js';
+import { ScraperError, isRetryableError } from './errors.js';
 import type { ScraperCredentials, ScraperScrapingResult } from 'israeli-bank-scrapers';
 
 const scraperFunctions: Record<BankKey, (credentials: ScraperCredentials, startDate: Date) => Promise<ScraperScrapingResult>> = {
@@ -20,11 +22,24 @@ async function runScraper(bankKey: BankKey): Promise<void> {
   console.log(`Start date: ${startDate.toISOString().split('T')[0]}`);
 
   const scrapeFn = scraperFunctions[bankKey];
-  const result = await scrapeFn(credentials as ScraperCredentials, startDate);
 
-  if (!result.success) {
-    throw new Error(`Scraper failed: ${result.errorType} - ${result.errorMessage}`);
-  }
+  const result = await retryWithBackoff(
+    async () => {
+      const res = await scrapeFn(credentials as ScraperCredentials, startDate);
+      if (!res.success) {
+        const errorType = res.errorType ?? 'Generic';
+        throw new ScraperError(
+          errorType,
+          `Scraper failed for ${bankKey}: ${errorType} - ${res.errorMessage}`,
+        );
+      }
+      return res;
+    },
+    {
+      shouldRetry: (error) =>
+        error instanceof ScraperError && isRetryableError(error.errorType),
+    },
+  );
 
   const accounts = result.accounts ?? [];
   const totalTxns = accounts.reduce((sum, acc) => sum + acc.txns.length, 0);

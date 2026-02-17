@@ -8,7 +8,8 @@
     "scrape:isracard": "tsx scrapers/scrape.ts isracard",
     "scrape:max": "tsx scrapers/scrape.ts max",
     "scrape:all": "tsx scrapers/scrape.ts all",
-    "postinstall": "node patches/patch-isracard.js"
+    "postinstall": "node patches/patch-isracard.js",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^25.2.3",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
