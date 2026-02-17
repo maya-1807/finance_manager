@@ -122,6 +122,45 @@ class TransactionCreate(BaseModel):
     notes: Optional[str] = None
 
 
+class TransactionUpdate(BaseModel):
+    category_id: Optional[int] = None
+    notes: Optional[str] = None
+    amount: Optional[float] = None
+
+
+class TransactionClassify(BaseModel):
+    category_id: int
+    transaction_type: Optional[str] = None
+    create_rule: bool = False
+    keyword: Optional[str] = None
+    match_type: str = "contains"
+
+
 class TransactionResponse(TransactionCreate):
     id: int
+    charged_month: Optional[str] = None
     created_at: str
+
+
+# --- Sync ---
+
+class SyncRequest(BaseModel):
+    banks: Optional[list[str]] = None
+
+
+class SyncScrapeResult(BaseModel):
+    bank: str
+    success: bool
+    error: Optional[str] = None
+
+
+class SyncIngestionResult(BaseModel):
+    inserted: int
+    updated: int
+    skipped: int
+    errors: list[str]
+
+
+class SyncResponse(BaseModel):
+    scrape_results: list[SyncScrapeResult]
+    ingestion: SyncIngestionResult

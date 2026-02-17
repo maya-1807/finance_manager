@@ -83,9 +83,13 @@
 - Parser that maps columns to the standard transaction format
 - Feeds into the same ingestion pipeline (dedup + classification)
 
-### Task 8: Scraper Scheduling
-- Automated scraping via cron or scheduler (recommended: daily)
-- Log each run to `scrape_log` table (source, status, transaction count, errors)
+### Task 8: On-Demand Sync
+- `POST /api/sync` endpoint — triggers scraper + ingestion on demand (called by UI sync button)
+- Accepts optional `banks` list; defaults to all banks
+- Runs `npm run scrape:<bank>` via subprocess for each bank, continues on failure
+- Calls `ingest_all()` to process new JSON files + auto-classify
+- Returns structured summary (per-bank scrape status + ingestion counts)
+- Scrape results logged to `scrape_log` table (via existing ingestion pipeline)
 
 ---
 

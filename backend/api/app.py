@@ -10,6 +10,8 @@ from api.routes import (
     fixed_incomes,
     fixed_expenses,
     savings,
+    sync,
+    transactions,
 )
 
 app = FastAPI(title="Cashboard API")
@@ -35,3 +37,5 @@ app.include_router(classification_rules.router)
 app.include_router(fixed_incomes.router)
 app.include_router(fixed_expenses.router)
 app.include_router(savings.router)
+app.include_router(sync.router)
+app.include_router(transactions.router)
